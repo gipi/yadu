@@ -1,0 +1,11 @@
+Yet another django utility module.
+
+In order to test all this mess you can use the following commands:
+
+ $ python bootstrap.py
+ $ ./bin/buildout
+ $ ./bin/test
+
+It's also possible to create/update documentation with
+
+ $ ./bin/sphinx

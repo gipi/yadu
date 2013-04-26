@@ -1,0 +1,6 @@
+/build
+/eggs
+/bin
+/develop-eggs
+/docs/_build
+.installed.cfg
