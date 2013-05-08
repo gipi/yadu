@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
 
 class XSendFileTests(TestCase):
@@ -23,3 +24,23 @@ class SSLTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "https://testserver%s" % url)
+
+class RelatedFieldAdmin(TestCase):
+    def test_list_field(self):
+        # create the admin user
+        admin = User.objects.create(
+            username='admin',
+            is_staff=True,
+            is_active=True,
+            is_superuser=True
+        )
+        admin.set_password('password')
+        admin.save()
+
+        url = reverse('admin:customer_customer_changelist')
+        self.assertEquals(
+            self.client.login(username='admin', password='password'),
+            True)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)

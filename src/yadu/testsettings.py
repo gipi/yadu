@@ -4,7 +4,16 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
     },
 }
-INSTALLED_APPS = ['yadu',]
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'yadu',
+    'customer',
+]
+
 ROOT_URLCONF = 'yadu.tests.urls'
 
 USE_XSENDFILE = True
