@@ -17,24 +17,11 @@ def getter_for_related_field(name, admin_order_field=None, short_description=Non
     getter.short_description = short_description or related_names[-1].title().replace('_',' ')
     return getter
 
-class RelatedFieldAdminMetaclass(admin.ModelAdmin.__metaclass__):
-    """
-        Metaclass used by RelatedFieldAdmin to handle fetching of related field values.
-        We have to do this as a metaclass because Django checks that list_display fields are supported by the class.
-    """
-    def __getattr__(self, name):
-        if '__' in name:
-            getter = getter_for_related_field(name)
-            setattr(self, name, getter) # cache so we don't have to do this again
-            return getter
-        raise AttributeError # let missing attribute be handled normally
-
 class RelatedFieldAdmin(admin.ModelAdmin):
     """
         Version of ModelAdmin that can use related fields in list_display, e.g.:
         list_display = ('address__city', 'address__country__country_code')
     """
-    __metaclass__ = RelatedFieldAdminMetaclass
     def queryset(self, request):
         qs = super(RelatedFieldAdmin, self).queryset(request)
 
@@ -55,3 +42,10 @@ class RelatedFieldAdmin(admin.ModelAdmin):
                 select_related.append(field_name)
 
         return qs.select_related(*select_related)
+
+    def __getattr__(self, name):
+        if '__' in name:
+            getter = getter_for_related_field(name)
+            setattr(self, name, getter) # cache so we don't have to do this again
+            return getter
+        raise AttributeError # let missing attribute be handled normally
