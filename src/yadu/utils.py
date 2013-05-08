@@ -6,6 +6,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 import posixpath
 import urllib
 import os
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 USE_XSENDFILE = getattr(settings, 'USE_XSENDFILE', False)
@@ -18,7 +22,7 @@ def xsendfileserve(request, path, document_root=None, **kwargs):
     in the directory structure.
 
     This is a thin wrapper around Django's built-in django.views.static,
-    which optionally uses USE_XSENDFILE to tell webservers to send the
+    which optionally uses ``USE_XSENDFILE`` to tell webservers to send the
     file to the client. This can, for example, be used to enable Django's
     authentication for static files.
 
@@ -34,8 +38,37 @@ def xsendfileserve(request, path, document_root=None, **kwargs):
     ``static/directory_index.html``.
 
     It's possible to indicate the custom header name for the web server by
-    the settings' variable XSENDFILE_HEADER that has as default the Apache2's
-    header name, for the Nginx server you should use 'X-Accel-Redirect' instead.
+    the settings' variable ``XSENDFILE_HEADER`` that has as default the Apache2's
+    header name, for the Nginx server you should use ``X-Accel-Redirect`` instead.
+
+    It's also available a logger (with name ``yadu.util``) to use in order to
+    have control on this kind of requests; it's possible to configure Django
+    to save this log in a file like::
+
+        'handlers': {
+            'console': {
+                'level':'DEBUG',
+                'class':'logging.StreamHandler',
+            },
+            "xsendfile_log_file_handler": {
+                "class": "logging.handlers.RotatingFileHandler",
+                "level": "INFO",
+                "filename": "info.log",
+                "maxBytes": "10485760",
+                "backupCount": "20",
+                "encoding": "utf8"
+            },
+        },
+        'loggers': {
+            'yadu.utils': {
+                'handlers': [
+                    'console',
+                    'xsendfile_log_file_handler',
+                ],
+                'level': 'INFO',
+                'propagate': True,
+            },
+        },
 
     Original code from <http://djangosnippets.org/snippets/2226/>
     """
@@ -61,6 +94,8 @@ def xsendfileserve(request, path, document_root=None, **kwargs):
         if newpath and path != newpath:
             return HttpResponseRedirect(newpath)
         fullpath = os.path.join(document_root, newpath)
+
+        logger.info('request path %s -> %s' % (path, fullpath))
 
         if os.path.isdir(fullpath):
             # if we are asked for a directory pass to django
