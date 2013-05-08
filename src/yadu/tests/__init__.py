@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 
 
 class XSendFileTests(TestCase):
-    def test_xsendfile(self):
+    def test_xsendfile_wo_login(self):
         url = reverse('wo_login', args=['miao.png',])
         response = self.client.get(url)
 
