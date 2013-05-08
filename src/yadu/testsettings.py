@@ -1,4 +1,8 @@
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = '/tmp/shorturls.db'
-INSTALLED_APPS = ['django_gipi_custom_fields']
-ROOT_URLCONF = ['django_gipi_custom_fields.urls']
+DATABASES = {
+    'default': {
+        'NAME': '/tmp/shorturls.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+    },
+}
+INSTALLED_APPS = ['yadu',]
+ROOT_URLCONF = 'yadu.tests.urls'
