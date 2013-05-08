@@ -6,3 +6,5 @@ DATABASES = {
 }
 INSTALLED_APPS = ['yadu',]
 ROOT_URLCONF = 'yadu.tests.urls'
+
+USE_XSENDFILE = True
