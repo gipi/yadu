@@ -9,7 +9,13 @@ setup(
     author = 'Gianluca Pacchiella',
     author_email = 'gp@ktln2.org',
 
-    packages = find_packages('src'),
+    packages = find_packages(
+        'src',
+        exclude=(
+            'customer',
+            'yadu.tests',
+        )
+    ),
     package_dir = {'': 'src'},
 
     install_requires = ['setuptools'],
