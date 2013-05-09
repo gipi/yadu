@@ -25,7 +25,8 @@ class SSLTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "https://testserver%s" % url)
 
-class RelatedFieldAdmin(TestCase):
+class RelatedFieldAdminTests(TestCase):
+
     def setUp(self):
         # create the admin user
         admin = User.objects.create(
