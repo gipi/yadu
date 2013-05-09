@@ -26,7 +26,7 @@ class SSLTests(TestCase):
         self.assertEqual(response["Location"], "https://testserver%s" % url)
 
 class RelatedFieldAdmin(TestCase):
-    def test_list_field(self):
+    def setUp(self):
         # create the admin user
         admin = User.objects.create(
             username='admin',
@@ -37,6 +37,7 @@ class RelatedFieldAdmin(TestCase):
         admin.set_password('password')
         admin.save()
 
+    def test_list_field(self):
         url = reverse('admin:customer_customer_changelist')
         self.assertEquals(
             self.client.login(username='admin', password='password'),
