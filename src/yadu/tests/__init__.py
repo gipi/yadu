@@ -1,6 +1,11 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from customer.models import (
+    Customer,
+    ZipCode,
+    Address,
+)
 
 
 class XSendFileTests(TestCase):
@@ -37,6 +42,11 @@ class RelatedFieldAdminTests(TestCase):
         )
         admin.set_password('password')
         admin.save()
+
+        # create an entry
+        zipcode = ZipCode.objects.create(state='Bananas')
+        address = Address.objects.create(zip_code=zipcode, street='Carnaby')
+        customer = Customer.objects.create(address=address, name='Mr Bean')
 
     def test_list_field(self):
         url = reverse('admin:customer_customer_changelist')
