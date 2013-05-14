@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "yadu",
-    version = "0.1",
+    version = "0.1.1",
     url = 'https://github.com/gipi/yadu.git',
     license = 'BSD',
     description = "Simple utilities for real life Django development",
