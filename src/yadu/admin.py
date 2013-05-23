@@ -9,9 +9,14 @@ def getter_for_related_field(name, admin_order_field=None, short_description=Non
         client__name = getter_for_related_field('client__name', short_description='Client')
     """
     related_names = name.split('__')
-    def getter(self, obj):
+    def getter(self, obj=None):
+        if not obj:
+            obj = self
         for related_name in related_names:
-            obj = getattr(obj, related_name)
+            try:
+                obj = getattr(obj, related_name)
+            except AttributeError:
+                raise Exception('field \'%s\' doesnt exist' % related_name)
         return obj
     getter.admin_order_field = admin_order_field or name
     getter.short_description = short_description or related_names[-1].title().replace('_',' ')
