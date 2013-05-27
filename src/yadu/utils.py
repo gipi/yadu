@@ -2,11 +2,16 @@ from urlparse import urlparse
 from django.conf import settings
 from django.views.static import serve
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template import Template
+from django.utils.encoding import smart_str
 
 import posixpath
 import urllib
 import os
 import logging
+import StringIO
+import zipfile
+from django.template.base import Context
 
 
 logger = logging.getLogger(__name__)
@@ -146,3 +151,74 @@ def ssl_required(view_func):
 
         return view_func(request, *args, **kwargs)
     return _checkssl
+
+def render_to_ods_response(ods_path, dictionary=None, context_instance=None, attachment_filename=None):
+    """Return an HTTP response with an ODS document rendered using
+    the passed context.
+
+    The path of the document used to renderize must be relative to the directory
+    where this is called.
+
+    In order to modify the ODS you can unzip it
+
+     $ unzip -l template.ods
+     Archive:  template.ods
+       Length      Date    Time    Name
+     ---------  ---------- -----   ----
+           46  2013-05-27 08:40   mimetype
+         6587  2013-05-27 08:40   Thumbnails/thumbnail.png
+         8329  2013-05-27 08:40   settings.xml
+       289946  2013-05-27 08:40   content.xml
+        93475  2013-05-27 08:40   styles.xml
+         1026  2013-05-27 08:40   meta.xml
+            0  2013-05-27 08:40   Configurations2/floater/
+            0  2013-05-27 08:40   Configurations2/accelerator/current.xml
+            0  2013-05-27 08:40   Configurations2/menubar/
+            0  2013-05-27 08:40   Configurations2/popupmenu/
+            0  2013-05-27 08:40   Configurations2/images/Bitmaps/
+            0  2013-05-27 08:40   Configurations2/progressbar/
+            0  2013-05-27 08:40   Configurations2/toolbar/
+            0  2013-05-27 08:40   Configurations2/toolpanel/
+            0  2013-05-27 08:40   Configurations2/statusbar/
+          993  2013-05-27 08:40   META-INF/manifest.xml
+    ---------                     -------
+       400402                     16 files
+    """
+    # http://djangosnippets.org/snippets/15/
+    ods_abspath = os.path.abspath(os.path.join(os.path.dirname(__file__), ods_path))
+    # default mimetype
+    mimetype = 'application/vnd.oasis.opendocument.text'
+
+    # ODF is just a zipfile
+    _input = zipfile.ZipFile(ods_abspath, "r" )
+
+    # we cannot write directly to HttpResponse, so use StringIO
+    text = StringIO.StringIO()
+
+    context = Context(dictionary)
+    if context_instance:
+        context = context_instance.update(dictionary)
+
+    # output document
+    output = zipfile.ZipFile(text, "a")
+    # go through the files in source
+    for zi in _input.filelist:
+        out = _input.read(zi.filename)
+        # wait for the only interesting file
+        if zi.filename == 'content.xml':
+            # un-escape the quotes (in filters etc.)
+            t = Template(out) 
+            # render the document
+            out = t.render(context) 
+        elif zi.filename == 'mimetype':
+            # mimetype is stored within the ODF
+            mimetype = out 
+        output.writestr(zi.filename, smart_str(out))
+
+    # close and finish
+    output.close()
+    response = HttpResponse(content=text.getvalue(), mimetype=mimetype)
+
+    response['Content-Disposition'] = 'attachment; filename=%s' % (attachment_filename if attachment_filename else 'download.ods')
+
+    return response
