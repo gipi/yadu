@@ -18,5 +18,8 @@ setup(
     ),
     package_dir = {'': 'src'},
 
-    install_requires = ['setuptools'],
+    install_requires = [
+        'setuptools',
+        'Django',
+    ],
 )
