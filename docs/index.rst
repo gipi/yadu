@@ -19,6 +19,7 @@ the github server::
 
    ssl
    static
+   middleware
 
 
 
