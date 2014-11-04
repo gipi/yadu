@@ -14,6 +14,8 @@ INSTALLED_APPS = [
     'customer',
 ]
 
+SECRET_KEY = 'foobar'
+
 ROOT_URLCONF = 'yadu.tests.urls'
 
 USE_XSENDFILE = True

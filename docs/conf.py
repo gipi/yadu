@@ -16,13 +16,11 @@ import sys, os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+path_abspath = os.path.abspath('../src/')
+sys.path.insert(0, path_abspath)
 
 # http://yml-blog.blogspot.it/2009/06/sphinx-autodoc-and-django-app.html
-from test_project import settings
-from django.core.management import setup_environ
-setup_environ(settings)
-
+os.environ['DJANGO_SETTINGS_MODULE'] = 'yadu.testsettings'
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
