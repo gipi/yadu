@@ -13,10 +13,12 @@ def getter_for_related_field(name, admin_order_field=None, short_description=Non
         if not obj:
             obj = self
         for related_name in related_names:
+            print related_names,
             try:
                 obj = getattr(obj, related_name)
             except AttributeError:
                 raise Exception('field \'%s\' doesnt exist' % related_name)
+            print obj
         return obj
     getter.admin_order_field = admin_order_field or name
     getter.short_description = short_description or related_names[-1].title().replace('_',' ')
@@ -62,7 +64,9 @@ class RelatedFieldAdmin(admin.ModelAdmin):
         return qs.select_related(*select_related)
 
     def __getattr__(self, name):
+        print '__getattr__', name
         if '__' in name:
+            #import ipdb;ipdb.set_trace()
             getter = getter_for_related_field(name)
             setattr(self, name, getter) # cache so we don't have to do this again
             return getter

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from yadu.admin import RelatedFieldAdmin
+from yadu.admin_utils import RelatedFieldAdmin
 
 from .models import Customer
 
